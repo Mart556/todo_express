@@ -3,10 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title>TODO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
 <body>
-    <h1><%= message %></h1>
-    <p>This is a simple EJS template.</p>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m6">
+              <div class="card">
+                <div class="card-content">
+                  <span class="card-title">ToDo List</span>
+                  <div class="row">
+                    <form class="col s12" action="api/send" method="post">
+                      <div class="row">
+                        <div class="input-field col s6">
+                          <input placeholder="Task" name="task" id="task" type="text">
+                          <label for="task">Insert Task</label>
+                        </div>
+                      </div>
+                      <input type="submit" value="Add Task" class="btn">
+                    </form>
+                  </div>
+                    <hr style="margin: 10px 0 10px 0px;">
+
+                    <ul class="collection">
+                      <% tasks.forEach(function(item, index) { %>
+                        <li class="collection-item">
+                          <div>
+                            <%= item.label %>
+                            <a onclick="deleteItem(<%= item.id %>, <%= index %>)" class="secondary-content">
+                              <i class="fa-solid fa-trash"></i>
+                            </a>
+
+                            <a href="/api/update-task?id=<%= item.id %>" class="secondary-content">
+                              <i class="fa-solid fa-pencil"></i>
+                            </a>
+                          </div>
+                        </li>
+                      <% }); %>
+                    </ul>
+                        
+                    <a href="/api/delete-tasks" class="btn">Kustuta Kõik</a>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
 </body>
+
+<script>
+  function deleteItem(taskId, taskIndex) {
+    fetch(`/api/delete/${taskId}`, {
+      method: 'DELETE',
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        const item = document.querySelectorAll('.collection-item')[taskIndex];
+        item.remove();
+      } else {
+        alert("Failed to delete item: " + data.message);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("An error occurred while deleting the item.");
+    });
+  }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
 </html>

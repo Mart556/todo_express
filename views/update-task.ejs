@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m6">
+              <div class="card">
+                <div class="card-content">
+                  <span class="card-title">ToDo List</span>
+                  <div class="row">
+                    <form class="col s12" action="edit-task" method="post">
+                      <div class="row">
+                        <div class="input-field col s6">
+                          <input placeholder="Task" name="task" id="task" type="text">
+                          <label for="task">Uus Nimi</label>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                    <hr style="margin: 10px 0 10px 0px;">
+                    <a onclick="editTask(<%= taskId %>)" class="btn">Uuenda</a>
+                    <a href="/" class="btn">Tagasi</a>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+</body>
+
+<script>
+    function editTask(taskId) {
+        const newTaskLabel = document.getElementById('task').value
+
+        fetch(`/api/edit-task?id=${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ label: newTaskLabel })
+            }).then(response => {
+      return response.json();
+    }).then((data) => {
+                if(data.success) {
+                    console.log('Wtf')
+                    window.location.href = `/`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</html>
