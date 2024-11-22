@@ -13,6 +13,7 @@
             <div class="col s12 m6">
               <div class="card">
                 <div class="card-content">
+                  <div id="error-message" style="background-color: red; text-align: center; color: white; font-size: larger; font-weight: bold;"></div>
                   <span class="card-title">ToDo List</span>
                   <div class="row">
                     <form class="col s12" action="api/send" method="post">
@@ -32,7 +33,7 @@
                         <li class="collection-item">
                           <div>
                             <%= item.label %>
-                            <a onclick="deleteItem(<%= item.id %>, <%= index %>)" class="secondary-content">
+                            <a onclick="deleteItem(<%= item.id %>, <%= index %>)" style="margin-left: 8px;" class="secondary-content">
                               <i class="fa-solid fa-trash"></i>
                             </a>
 
@@ -73,6 +74,31 @@
       alert("An error occurred while deleting the item.");
     });
   }
+
+  document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault(); 
+
+    const task = document.getElementById('task').value;
+
+    fetch('/api/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ task: task }) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('error-message').innerText = data.error;
+        } else {
+            console.log('Task added successfully');
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+    });
+});
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

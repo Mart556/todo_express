@@ -26,6 +26,12 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/send', (req, res) => {
+
+    const newTaskLabel = req.body.task;
+    if (newTaskLabel === '') {
+        return res.send({error: 'Lisage korrektne nimi.'})
+    }
+
     fs.readFile('./tasks.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading the file:', err);
@@ -77,7 +83,7 @@ app.delete('/api/delete/:index', (req, res) => {
 app.get("/api/delete-tasks", (req, res) => {
     console.log("Delete all tasks request");
 
-    fs.writeFile('./tasks.json', '', (err) => {
+    fs.writeFile('./tasks.json', '[]', (err) => {
         if (err) {
             console.error('Error writing to the file:', err);
             return res.status(500).send('Error clearing the file.');
