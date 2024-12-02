@@ -1,106 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-</head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="col s12 m6">
-              <div class="card">
-                <div class="card-content">
-                  <div id="error-message" style="background-color: red; text-align: center; color: white; font-size: larger; font-weight: bold;"></div>
-                  <span class="card-title">ToDo List</span>
-                  <div class="row">
-                    <form class="col s12" action="api/send" method="post">
-                      <div class="row">
-                        <div class="input-field col s6">
-                          <input placeholder="Task" name="task" id="task" type="text">
-                          <label for="task">Insert Task</label>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TODO</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
+            integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+        />
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content">
+                            <div
+                                id="error-message"
+                                style="
+                                    background-color: red;
+                                    text-align: center;
+                                    color: white;
+                                    font-size: larger;
+                                    font-weight: bold;
+                                "
+                            ></div>
+                            <span class="card-title">ToDo List</span>
+                            <div class="row">
+                                <form
+                                    class="col s12"
+                                    action="api/send"
+                                    method="post"
+                                >
+                                    <div class="row">
+                                        <div class="input-field col s6">
+                                            <input
+                                                placeholder="Task"
+                                                name="task"
+                                                id="task"
+                                                type="text"
+                                            />
+                                            <label for="task"
+                                                >Insert Task</label
+                                            >
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="submit"
+                                        value="Add Task"
+                                        class="btn"
+                                    />
+                                </form>
+                            </div>
+                            <hr style="margin: 10px 0 10px 0px" />
+
+                            <ul class="collection">
+                                <% tasks.forEach(function(item, index) { %>
+                                <li class="collection-item">
+                                    <div>
+                                        <%= item.label %>
+                                        <a
+                                            onclick='deleteItem("<%= item.id %>", "<%= index %>")'
+                                            style="margin-left: 8px"
+                                            class="secondary-content"
+                                        >
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+
+                                        <a
+                                            href="/api/update-task?id=<%= item.id %>"
+                                            class="secondary-content"
+                                        >
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </a>
+                                    </div>
+                                </li>
+                                <% }); %>
+                            </ul>
+
+                            <a href="/api/delete-tasks" class="btn"
+                                >Kustuta Kõik</a
+                            >
                         </div>
-                      </div>
-                      <input type="submit" value="Add Task" class="btn">
-                    </form>
-                  </div>
-                    <hr style="margin: 10px 0 10px 0px;">
-
-                    <ul class="collection">
-                      <% tasks.forEach(function(item, index) { %>
-                        <li class="collection-item">
-                          <div>
-                            <%= item.label %>
-                            <a onclick="deleteItem(<%= item.id %>, <%= index %>)" style="margin-left: 8px;" class="secondary-content">
-                              <i class="fa-solid fa-trash"></i>
-                            </a>
-
-                            <a href="/api/update-task?id=<%= item.id %>" class="secondary-content">
-                              <i class="fa-solid fa-pencil"></i>
-                            </a>
-                          </div>
-                        </li>
-                      <% }); %>
-                    </ul>
-                        
-                    <a href="/api/delete-tasks" class="btn">Kustuta Kõik</a>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-    </div>
-</body>
+        </div>
+    </body>
 
-<script>
-  function deleteItem(taskId, taskIndex) {
-    fetch(`/api/delete/${taskId}`, {
-      method: 'DELETE',
-    })
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        const item = document.querySelectorAll('.collection-item')[taskIndex];
-        item.remove();
-      } else {
-        alert("Failed to delete item: " + data.message);
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("An error occurred while deleting the item.");
-    });
-  }
-
-  document.querySelector('form').addEventListener('submit', function(event) {
-    event.preventDefault(); 
-
-    const task = document.getElementById('task').value;
-
-    fetch('/api/send', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ task: task }) 
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            document.getElementById('error-message').innerText = data.error;
-        } else {
-            console.log('Task added successfully');
+    <script>
+        function deleteItem(taskId, taskIndex) {
+            fetch(`/api/delete/${taskId}`, {
+                method: "DELETE",
+            })
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        const item =
+                            document.querySelectorAll(".collection-item")[
+                                taskIndex
+                            ];
+                        item.remove();
+                    } else {
+                        alert("Failed to delete item: " + data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("An error occurred while deleting the item.");
+                });
         }
-    })
-    .catch(err => {
-        console.error('Error:', err);
-    });
-});
-</script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        document
+            .querySelector("form")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
 
+                const task = document.getElementById("task").value;
+
+                fetch("/api/send", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        task: task,
+                    }),
+                })
+                    .then((response) => {
+                        return response.json(); // Get the response as text
+                    })
+                    .then((data) => {
+                        if (data.error) {
+                            document.getElementById("error-message").innerText =
+                                data.error;
+                        } else {
+                            window.location.reload();
+                        }
+                    })
+                    .catch((err) => {
+                        console.error("Error:", err);
+                        document.getElementById("error-message").innerText =
+                            "Ootamatu viga!";
+                    });
+            });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </html>

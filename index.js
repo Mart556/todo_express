@@ -35,7 +35,7 @@ app.post('/api/send', (req, res) => {
     fs.readFile('./tasks.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading the file:', err);
-            return;
+            return res.status(500).send({error: 'Error reading the file.'});
         }
 
         const tasks = JSON.parse(data) || []
@@ -47,10 +47,10 @@ app.post('/api/send', (req, res) => {
         fs.writeFile('./tasks.json', JSON.stringify(tasks, null, 2), (err) => {
             if (err) {
                 console.error('Error writing to the file:', err);
-                return res.status(500).send('Error writing to the file.');
+                return res.status(500).send({error: 'Error writing to the file.'});
             }
 
-            res.redirect("/")
+            res.json({ success: true, message: 'Task added successfully.' });
         });
     });
 });
@@ -67,8 +67,6 @@ app.delete('/api/delete/:index', (req, res) => {
         let tasks = JSON.parse(data) || []
         tasks = tasks.filter(task => task.id !== taskId);
         
-
-        // Write the updated tasks back to the file
         fs.writeFile('./tasks.json', JSON.stringify(tasks, null, 2), (err) => {
             if (err) {
                 console.error('Error writing to the file:', err);
